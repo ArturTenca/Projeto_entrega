@@ -12,6 +12,8 @@ export type EntregaStatus = 'pendente' | 'separado' | 'em_rota' | 'entregue'
 
 export type UserRole = 'organizador' | 'entregador'
 
+export type ThemeMode = 'light' | 'dark'
+
 export interface Produto {
   id: string
   nome: string
@@ -75,6 +77,7 @@ export interface Profile {
   id: string
   display_name: string | null
   role: UserRole
+  theme: ThemeMode
   created_at: string
   updated_at: string
 }

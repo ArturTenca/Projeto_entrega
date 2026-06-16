@@ -5,6 +5,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet/dist/leaflet.css'
+import { useTheme } from '@/features/theme/ThemeProvider'
 import type { RouteResult } from '@/lib/routing/types'
 import { Card } from '@/components/ui/Card'
 
@@ -41,6 +42,8 @@ interface DeliveryMapProps {
 }
 
 export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
+  const { theme } = useTheme()
+
   if (!route || route.stops.length === 0) {
     return (
       <Card className="flex h-64 items-center justify-center">
@@ -60,8 +63,16 @@ export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
         scrollWheelZoom={false}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={
+            theme === 'dark'
+              ? '&copy; <a href="https://carto.com/">CARTO</a>'
+              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          }
+          url={
+            theme === 'dark'
+              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+              : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          }
         />
         <FitBounds route={route} />
         <Polyline

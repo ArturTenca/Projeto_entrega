@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { GemmaWordmark } from '@/components/brand/GemmaWordmark'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -145,7 +146,7 @@ export function ClientesPage() {
       <header className="space-y-3">
         <h1 className="text-xl font-bold text-secondary">Clientes</h1>
         <p className="text-sm text-muted">
-          Visível para todos os usuários da Gemma.
+          Visível para todos os usuários da <GemmaWordmark className="text-base" />.
         </p>
         <Tabs
           tabs={[

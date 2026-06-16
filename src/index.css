@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #f54b2e;
   --color-primary-hover: #e04328;
@@ -13,6 +15,7 @@
   --color-border: #e5e7eb;
 
   --font-sans: 'Inter', sans-serif;
+  --font-gemma: 'Gloria Hallelujah', cursive;
 
   --radius-button: 12px;
   --radius-card: 12px;
@@ -20,6 +23,15 @@
 }
 
 @layer base {
+  html.dark {
+    color-scheme: dark;
+    --color-secondary: #f3f4f6;
+    --color-background: #0f1115;
+    --color-card: #181b22;
+    --color-muted: #9ca3af;
+    --color-border: #2d3340;
+  }
+
   * {
     @apply border-border;
   }

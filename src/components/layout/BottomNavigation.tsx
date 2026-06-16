@@ -1,18 +1,27 @@
+import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
+import {
+  NavIconAgenda,
+  NavIconClientes,
+  NavIconConfig,
+  NavIconEntregas,
+  NavIconPedidos,
+  NavIconProdutos,
+} from './NavIcons'
 
 interface NavItem {
   to: string
   label: string
-  icon: string
+  icon: ReactNode
 }
 
 const navItems: NavItem[] = [
-  { to: '/', label: 'Entregas', icon: '📦' },
-  { to: '/pedidos', label: 'Pedidos', icon: '📋' },
-  { to: '/produtos', label: 'Produtos', icon: '🥚' },
-  { to: '/clientes', label: 'Clientes', icon: '👥' },
-  { to: '/agenda', label: 'Agenda', icon: '📅' },
-  { to: '/configuracoes', label: 'Config', icon: '⚙️' },
+  { to: '/', label: 'Entregas', icon: <NavIconEntregas /> },
+  { to: '/pedidos', label: 'Pedidos', icon: <NavIconPedidos /> },
+  { to: '/produtos', label: 'Produtos', icon: <NavIconProdutos /> },
+  { to: '/clientes', label: 'Clientes', icon: <NavIconClientes /> },
+  { to: '/agenda', label: 'Agenda', icon: <NavIconAgenda /> },
+  { to: '/configuracoes', label: 'Config', icon: <NavIconConfig /> },
 ]
 
 export function BottomNavigation() {
@@ -36,9 +45,7 @@ export function BottomNavigation() {
               ].join(' ')
             }
           >
-            <span className="text-lg leading-none" aria-hidden="true">
-              {item.icon}
-            </span>
+            {item.icon}
             <span>{item.label}</span>
           </NavLink>
         ))}
