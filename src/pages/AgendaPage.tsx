@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { ArrowButton } from '@/components/ui/ArrowButton'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -73,23 +74,19 @@ export function AgendaPage() {
         </p>
 
         <div className="flex items-center justify-between gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
+          <ArrowButton
+            direction="left"
+            aria-label="Semana anterior"
             onClick={() => setWeekStart((current) => shiftDate(current, -7))}
-          >
-            ← Semana
-          </Button>
+          />
           <div className="text-center text-sm text-muted">
             {formatDisplayDate(weekStart)} — {formatDisplayDate(weekEnd)}
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
+          <ArrowButton
+            direction="right"
+            aria-label="Próxima semana"
             onClick={() => setWeekStart((current) => shiftDate(current, 7))}
-          >
-            Semana →
-          </Button>
+          />
         </div>
 
         <Button

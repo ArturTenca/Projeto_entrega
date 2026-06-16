@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/Button'
+import { ArrowButton } from '@/components/ui/ArrowButton'
 import { formatDisplayDate, isToday, shiftDate } from '@/lib/dates'
 
 interface DateSelectorProps {
@@ -9,14 +9,11 @@ interface DateSelectorProps {
 export function DateSelector({ date, onChange }: DateSelectorProps) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <Button
-        variant="secondary"
-        size="sm"
+      <ArrowButton
+        direction="left"
         onClick={() => onChange(shiftDate(date, -1))}
         aria-label="Dia anterior"
-      >
-        ←
-      </Button>
+      />
 
       <div className="min-w-0 flex-1 text-center">
         <p className="truncate text-sm capitalize text-muted">
@@ -35,14 +32,11 @@ export function DateSelector({ date, onChange }: DateSelectorProps) {
         )}
       </div>
 
-      <Button
-        variant="secondary"
-        size="sm"
+      <ArrowButton
+        direction="right"
         onClick={() => onChange(shiftDate(date, 1))}
         aria-label="Próximo dia"
-      >
-        →
-      </Button>
+      />
     </div>
   )
 }

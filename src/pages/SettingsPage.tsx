@@ -6,20 +6,13 @@ import { useTheme } from '@/features/theme/ThemeProvider'
 
 export function SettingsPage() {
   const { user, signOut } = useAuth()
-  const { theme, toggleTheme, loading: themeLoading } = useTheme()
+  const { theme, toggleTheme } = useTheme()
   const [loading, setLoading] = useState(false)
-  const [themeSaving, setThemeSaving] = useState(false)
 
   async function handleSignOut() {
     setLoading(true)
     await signOut()
     setLoading(false)
-  }
-
-  async function handleThemeToggle() {
-    setThemeSaving(true)
-    await toggleTheme()
-    setThemeSaving(false)
   }
 
   return (
@@ -39,7 +32,7 @@ export function SettingsPage() {
           <div>
             <p className="font-medium text-secondary">Modo escuro</p>
             <p className="mt-1 text-sm text-muted">
-              Salvo na sua conta para todos os dispositivos.
+              Salvo neste navegador.
             </p>
           </div>
           <button
@@ -47,15 +40,11 @@ export function SettingsPage() {
             role="switch"
             aria-checked={theme === 'dark'}
             aria-label="Alternar modo escuro"
-            disabled={themeLoading || themeSaving}
-            onClick={() => void handleThemeToggle()}
+            onClick={toggleTheme}
             className={[
               'relative h-8 w-14 shrink-0 rounded-full transition-colors duration-150',
               theme === 'dark' ? 'bg-primary' : 'bg-border',
-              themeLoading || themeSaving ? 'opacity-60' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            ].join(' ')}
           >
             <span
               className={[

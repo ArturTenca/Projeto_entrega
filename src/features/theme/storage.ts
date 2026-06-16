@@ -1,4 +1,4 @@
-import type { ThemeMode } from '@/types/database'
+export type ThemeMode = 'light' | 'dark'
 
 const THEME_STORAGE_KEY = 'gemma_theme'
 
