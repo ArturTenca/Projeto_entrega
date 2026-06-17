@@ -30,7 +30,7 @@ export function BottomNavigation() {
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card"
       aria-label="Navegação principal"
     >
-      <div className="mx-auto flex max-w-[1400px] items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-2">
+      <div className="mx-auto flex max-w-[500px] items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-2">
         {navItems.map((item) => (
           <NavLink
             key={item.to}

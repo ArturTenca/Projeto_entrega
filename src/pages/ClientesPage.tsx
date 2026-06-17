@@ -20,9 +20,8 @@ import {
 } from '@/features/clientes/api'
 import {
   CondominioForm,
-  parseCondominioPayload,
-  type CondominioFormValues,
 } from '@/features/condominios/CondominioForm'
+import type { CondominioPayload } from '@/features/condominios/geocodeLocation'
 import {
   createCondominio,
   deleteCondominio,
@@ -96,9 +95,8 @@ export function ClientesPage() {
     await load()
   }
 
-  async function handleCondominioSubmit(values: CondominioFormValues) {
+  async function handleCondominioSubmit(payload: CondominioPayload) {
     setSaving(true)
-    const payload = parseCondominioPayload(values)
 
     const result =
       condominioModal?.mode === 'edit'

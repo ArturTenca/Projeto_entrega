@@ -5,12 +5,15 @@ import { Textarea } from '@/components/ui/Textarea'
 import { INPUT_LIMITS } from '@/lib/security/limits'
 import { sanitizeTextField } from '@/lib/security/sanitize'
 import type { Condominio } from '@/types/database'
+import {
+  resolveCondominioPayload,
+  type CondominioPayload,
+} from './geocodeLocation'
 
 export type CondominioFormValues = {
   nome: string
   endereco: string
-  latitude: string
-  longitude: string
+  cep: string
   observacoes: string
   ativo: boolean
 }
@@ -18,7 +21,7 @@ export type CondominioFormValues = {
 interface CondominioFormProps {
   initial?: Condominio | null
   loading?: boolean
-  onSubmit: (values: CondominioFormValues) => Promise<void>
+  onSubmit: (payload: CondominioPayload) => Promise<void>
   onCancel: () => void
 }
 
@@ -26,8 +29,7 @@ function toFormValues(condominio?: Condominio | null): CondominioFormValues {
   return {
     nome: condominio?.nome ?? '',
     endereco: condominio?.endereco ?? '',
-    latitude: condominio?.latitude?.toString() ?? '',
-    longitude: condominio?.longitude?.toString() ?? '',
+    cep: '',
     observacoes: condominio?.observacoes ?? '',
     ativo: condominio?.ativo ?? true,
   }
@@ -43,6 +45,7 @@ export function CondominioForm({
     toFormValues(initial),
   )
   const [error, setError] = useState<string | null>(null)
+  const [geocoding, setGeocoding] = useState(false)
 
   useEffect(() => {
     setValues(toFormValues(initial))
@@ -57,8 +60,24 @@ export function CondominioForm({
       return
     }
 
-    await onSubmit(values)
+    if (!values.endereco.trim() && !values.cep.trim()) {
+      setError('Informe o endereço ou o CEP para localizar no mapa.')
+      return
+    }
+
+    setGeocoding(true)
+    const result = await resolveCondominioPayload(values)
+    setGeocoding(false)
+
+    if (result.error || !result.payload) {
+      setError(result.error ?? 'Não foi possível salvar o condomínio.')
+      return
+    }
+
+    await onSubmit(result.payload)
   }
+
+  const saving = loading || geocoding
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
@@ -77,6 +96,7 @@ export function CondominioForm({
 
       <Input
         label="Endereço"
+        placeholder="Rua, número, bairro, cidade"
         value={values.endereco}
         maxLength={INPUT_LIMITS.ENDERECO_MAX}
         onChange={(event) =>
@@ -91,26 +111,26 @@ export function CondominioForm({
       />
 
       <Input
-        label="Latitude (opcional)"
-        type="number"
-        step="any"
-        inputMode="decimal"
-        value={values.latitude}
-        onChange={(event) =>
-          setValues((current) => ({ ...current, latitude: event.target.value }))
-        }
+        label="CEP"
+        placeholder="00000-000"
+        inputMode="numeric"
+        value={values.cep}
+        maxLength={9}
+        onChange={(event) => {
+          const digits = event.target.value.replace(/\D/g, '').slice(0, 8)
+          const formatted =
+            digits.length > 5
+              ? `${digits.slice(0, 5)}-${digits.slice(5)}`
+              : digits
+
+          setValues((current) => ({ ...current, cep: formatted }))
+        }}
       />
 
-      <Input
-        label="Longitude (opcional)"
-        type="number"
-        step="any"
-        inputMode="decimal"
-        value={values.longitude}
-        onChange={(event) =>
-          setValues((current) => ({ ...current, longitude: event.target.value }))
-        }
-      />
+      <p className="-mt-2 text-xs text-muted">
+        Use o endereço completo ou só o CEP. A localização no mapa é gerada
+        automaticamente.
+      </p>
 
       <Textarea
         label="Observações"
@@ -146,40 +166,19 @@ export function CondominioForm({
       ) : null}
 
       <div className="flex gap-3">
-        <Button type="button" variant="secondary" fullWidth onClick={onCancel}>
+        <Button
+          type="button"
+          variant="secondary"
+          fullWidth
+          disabled={saving}
+          onClick={onCancel}
+        >
           Cancelar
         </Button>
-        <Button type="submit" fullWidth loading={loading}>
-          Salvar
+        <Button type="submit" fullWidth loading={saving}>
+          {geocoding ? 'Localizando...' : 'Salvar'}
         </Button>
       </div>
     </form>
   )
-}
-
-export function parseCondominioPayload(values: CondominioFormValues) {
-  const latitude = values.latitude.trim()
-    ? Number.parseFloat(values.latitude)
-    : null
-  const longitude = values.longitude.trim()
-    ? Number.parseFloat(values.longitude)
-    : null
-
-  return {
-    nome: values.nome.trim(),
-    endereco: values.endereco.trim() || null,
-    latitude:
-      latitude !== null && !Number.isNaN(latitude) && latitude >= -90 && latitude <= 90
-        ? latitude
-        : null,
-    longitude:
-      longitude !== null &&
-      !Number.isNaN(longitude) &&
-      longitude >= -180 &&
-      longitude <= 180
-        ? longitude
-        : null,
-    observacoes: values.observacoes.trim() || null,
-    ativo: values.ativo,
-  }
 }
