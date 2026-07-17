@@ -32,7 +32,7 @@ cp .env.example .env
 
 - Crie os usuários em **Authentication → Users** (sem tela de cadastro no app)
 - Desabilite sign-up público em **Authentication → Providers → Email**
-- Execute os SQLs locais em `supabase/migrations/` **na ordem** (001 → 002 → 003) no SQL Editor
+- Execute o SQL em `supabase/setup_completo.sql` (ou os arquivos em `supabase/migrations/` **na ordem** 001 → 004) no SQL Editor
 
 5. Deploy da Edge Function de bloqueio por IP:
 
@@ -85,7 +85,7 @@ A tela **Entregas** agrupa o dia por condomínio (cápsulas) e calcula a rota no
 
 **Waze** não possui API pública para embedar rotas no app. Cada condomínio tem botão **Waze** que abre o app com navegação e trânsito ao vivo.
 
-Execute também `supabase/migrations/004_condominios_coordinates.sql` para latitude/longitude nos condomínios.
+Coordenadas (`latitude`/`longitude`) já estão no schema inicial (`002_schema.sql`).
 
 ## Fase atual
 

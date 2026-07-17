@@ -28,5 +28,8 @@ npm-debug.log*
 # TypeScript
 *.tsbuildinfo
 
-# Supabase — schema e migrations ficam só no dashboard/SQL Editor
+# Supabase — migrations versionadas; outros SQL locais ignorados
 supabase/**/*.sql
+!supabase/migrations/
+!supabase/migrations/**
+!supabase/setup_completo.sql
