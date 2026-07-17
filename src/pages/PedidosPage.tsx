@@ -99,7 +99,7 @@ export function PedidosPage() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-xl font-bold text-secondary">Pedidos</h1>
+        <h1 className="page-title">Pedidos</h1>
         <p className="mt-1 text-sm text-muted">
           Pedidos recorrentes por dia da semana — visíveis para todos.
         </p>

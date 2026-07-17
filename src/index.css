@@ -46,3 +46,13 @@
     min-height: 100dvh;
   }
 }
+
+@layer components {
+  .page-title {
+    @apply text-center text-xl font-extrabold text-secondary;
+  }
+
+  .section-title {
+    @apply text-center font-bold text-secondary;
+  }
+}

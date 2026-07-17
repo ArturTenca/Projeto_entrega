@@ -142,7 +142,7 @@ export function ClientesPage() {
   return (
     <div className="space-y-4">
       <header className="space-y-3">
-        <h1 className="text-xl font-bold text-secondary">Clientes</h1>
+        <h1 className="page-title">Clientes</h1>
         <p className="text-sm text-muted">
           Visível para todos os usuários da <GemmaWordmark className="text-base" />.
         </p>

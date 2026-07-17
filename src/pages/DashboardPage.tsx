@@ -43,7 +43,7 @@ export function DashboardPage() {
     <div className="space-y-4">
       <header className="space-y-3">
         <DateSelector date={selectedDate} onChange={setSelectedDate} />
-        <h1 className="text-xl font-bold text-secondary">Entrega do dia</h1>
+        <h1 className="page-title">Entrega do dia</h1>
         <p className="text-sm text-muted">
           Todos os usuários veem os mesmos pedidos e entregas.
         </p>
@@ -102,7 +102,7 @@ export function DashboardPage() {
           />
 
           <section className="space-y-3">
-            <h2 className="font-semibold text-secondary">
+            <h2 className="section-title">
               Condomínios ({orderedGroups.length})
             </h2>
 

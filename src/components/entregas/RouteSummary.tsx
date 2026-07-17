@@ -38,7 +38,7 @@ export function RouteSummary({
 
   return (
     <Card variant="important">
-      <h2 className="font-semibold text-secondary">Rota do dia</h2>
+      <h2 className="section-title">Rota do dia</h2>
 
       {error ? (
         <p className="mt-2 text-sm text-error" role="alert">

@@ -18,7 +18,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-xl font-bold text-secondary">Configurações</h1>
+        <h1 className="page-title">Configurações</h1>
         <p className="mt-1 text-sm text-muted">Conta e preferências</p>
       </header>
 

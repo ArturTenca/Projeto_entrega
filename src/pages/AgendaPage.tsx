@@ -68,7 +68,7 @@ export function AgendaPage() {
   return (
     <div className="space-y-4">
       <header className="space-y-3">
-        <h1 className="text-xl font-bold text-secondary">Agenda</h1>
+        <h1 className="page-title">Agenda</h1>
         <p className="text-sm text-muted">
           Segunda a sábado — pedidos ativos da semana
         </p>
