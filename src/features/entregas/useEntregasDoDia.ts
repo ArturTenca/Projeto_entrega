@@ -32,6 +32,17 @@ export function useEntregasDoDia(dateIso: string) {
   )
   const stats = useMemo(() => getDeliveryDayStats(entregas), [entregas])
 
+  const patchEntrega = useCallback(
+    (id: string, patch: Partial<EntregaComDetalhes>) => {
+      setEntregas((current) =>
+        current.map((entrega) =>
+          entrega.id === id ? { ...entrega, ...patch } : entrega,
+        ),
+      )
+    },
+    [],
+  )
+
   return {
     entregas,
     groups,
@@ -39,5 +50,6 @@ export function useEntregasDoDia(dateIso: string) {
     loading,
     error,
     reload: load,
+    patchEntrega,
   }
 }

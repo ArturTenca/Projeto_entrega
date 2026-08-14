@@ -11,6 +11,7 @@ import { PedidosPage } from '@/pages/PedidosPage'
 import { AgendaPage } from '@/pages/AgendaPage'
 import { ProdutosPage } from '@/pages/ProdutosPage'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { KanbanPage } from '@/pages/KanbanPage'
 
 export function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
+          <Route path="quadro" element={<KanbanPage />} />
           <Route path="pedidos" element={<PedidosPage />} />
           <Route path="produtos" element={<ProdutosPage />} />
           <Route path="clientes" element={<ClientesPage />} />

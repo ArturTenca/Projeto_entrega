@@ -96,10 +96,12 @@ export function DashboardPage() {
             missingCoordinates={missingCoordinates}
           />
 
-          <DeliveryMap
-            route={route}
-            selectedStopId={selectedCondominioId}
-          />
+          <div className="relative z-0 -mx-4 sm:-mx-6">
+            <DeliveryMap
+              route={route}
+              selectedStopId={selectedCondominioId}
+            />
+          </div>
 
           <section className="space-y-3">
             <h2 className="section-title">

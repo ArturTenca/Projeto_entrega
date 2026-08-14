@@ -29,33 +29,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true
 
     async function initSession() {
-      const { data, error } = await supabase.auth.getSession()
+      try {
+        const { data, error } = await supabase.auth.getSession()
 
-      if (!mounted) return
+        if (!mounted) return
 
-      if (error) {
+        if (error) {
+          console.error('Erro ao validar sessão')
+          setSession(null)
+        } else {
+          setSession(data.session)
+        }
+      } catch {
+        if (!mounted) return
         console.error('Erro ao validar sessão')
         setSession(null)
-      } else {
-        setSession(data.session)
+      } finally {
+        if (mounted) {
+          setLoading(false)
+        }
       }
-
-      setLoading(false)
     }
 
     void initSession()
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (!mounted) return
-      setSession(nextSession)
-      setLoading(false)
-    })
+    let subscription: { unsubscribe: () => void } | null = null
+
+    try {
+      const {
+        data: { subscription: authSubscription },
+      } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+        if (!mounted) return
+        setSession(nextSession)
+        setLoading(false)
+      })
+      subscription = authSubscription
+    } catch {
+      console.error('Erro ao observar sessão')
+    }
 
     return () => {
       mounted = false
-      subscription.unsubscribe()
+      subscription?.unsubscribe()
     }
   }, [])
 
@@ -66,22 +81,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: validation.error }
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: validation.email,
-      password: validation.password,
-    })
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: validation.email,
+        password: validation.password,
+      })
 
-    if (error) {
-      return { error: 'Email ou senha inválidos.' }
+      if (error) {
+        return { error: 'Email ou senha inválidos.' }
+      }
+
+      return { error: null }
+    } catch {
+      return {
+        error:
+          'Não foi possível conectar ao banco de dados. Tente novamente mais tarde.',
+      }
     }
-
-    return { error: null }
   }, [])
 
   const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut()
+    try {
+      const { error } = await supabase.auth.signOut()
 
-    if (error) {
+      if (error) {
+        console.error('Erro ao encerrar sessão')
+      }
+    } catch {
       console.error('Erro ao encerrar sessão')
     }
 

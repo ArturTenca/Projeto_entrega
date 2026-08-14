@@ -1,4 +1,5 @@
-import { geocodeAddress } from '@/lib/routing/geocode'
+import { cepDigits, isCompleteCep } from '@/lib/format/cep'
+import { geocodeAddress, geocodeByCep } from '@/lib/routing/geocode'
 import type { Condominio } from '@/types/database'
 import type { CondominioFormValues } from './CondominioForm'
 
@@ -7,43 +8,65 @@ export type CondominioPayload = Omit<
   'id' | 'created_at' | 'updated_at'
 >
 
-function normalizeCep(cep: string): string {
-  return cep.replace(/\D/g, '')
+export type CepLookupResult = {
+  endereco: string
+  logradouro: string
+  bairro: string
+  cidade: string
+  uf: string
 }
 
-async function lookupCepAddress(cep: string): Promise<string | null> {
-  const digits = normalizeCep(cep)
+export async function lookupCepAddress(
+  cep: string,
+): Promise<{ data: CepLookupResult | null; error: string | null }> {
+  const digits = cepDigits(cep)
 
-  if (digits.length !== 8) {
-    return null
+  if (digits.length === 0) {
+    return { data: null, error: null }
   }
 
-  const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
-
-  if (!response.ok) {
-    return null
+  if (!isCompleteCep(digits)) {
+    return { data: null, error: 'CEP incompleto. Use o formato 00000-000.' }
   }
 
-  const data = (await response.json()) as {
-    erro?: boolean
-    logradouro?: string
-    bairro?: string
-    localidade?: string
-    uf?: string
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
+
+    if (!response.ok) {
+      return { data: null, error: 'Não foi possível consultar o CEP.' }
+    }
+
+    const data = (await response.json()) as {
+      erro?: boolean
+      logradouro?: string
+      bairro?: string
+      localidade?: string
+      uf?: string
+    }
+
+    if (data.erro || !data.localidade || !data.uf) {
+      return { data: null, error: 'CEP não encontrado.' }
+    }
+
+    const parts = [
+      data.logradouro,
+      data.bairro,
+      `${data.localidade} - ${data.uf}`,
+    ].filter(Boolean)
+
+    return {
+      data: {
+        endereco: parts.join(', '),
+        logradouro: data.logradouro ?? '',
+        bairro: data.bairro ?? '',
+        cidade: data.localidade,
+        uf: data.uf,
+      },
+      error: null,
+    }
+  } catch {
+    return { data: null, error: 'Não foi possível consultar o CEP.' }
   }
-
-  if (data.erro || !data.localidade || !data.uf) {
-    return null
-  }
-
-  const parts = [
-    data.logradouro,
-    data.bairro,
-    `${data.localidade} - ${data.uf}`,
-    'Brasil',
-  ].filter(Boolean)
-
-  return parts.join(', ')
 }
 
 export async function resolveCondominioPayload(
@@ -51,42 +74,63 @@ export async function resolveCondominioPayload(
 ): Promise<{ payload: CondominioPayload | null; error: string | null }> {
   const nome = values.nome.trim()
   const endereco = values.endereco.trim()
-  const cep = normalizeCep(values.cep)
+  const cep = cepDigits(values.cep)
 
   if (!nome) {
     return { payload: null, error: 'Informe o nome do condomínio.' }
   }
 
+  if (!endereco && !cep) {
+    return {
+      payload: null,
+      error: 'Informe o endereço ou um CEP válido (00000-000).',
+    }
+  }
+
+  if (cep && !isCompleteCep(cep)) {
+    return { payload: null, error: 'CEP incompleto. Use o formato 00000-000.' }
+  }
+
   let finalEndereco = endereco
   let latitude: number | null = null
   let longitude: number | null = null
+  let cepLookup: CepLookupResult | null = null
 
   if (cep) {
-    if (cep.length !== 8) {
-      return { payload: null, error: 'Informe um CEP válido com 8 dígitos.' }
+    const lookup = await lookupCepAddress(cep)
+
+    if (lookup.error || !lookup.data) {
+      return { payload: null, error: lookup.error ?? 'CEP não encontrado.' }
     }
 
-    const cepAddress = await lookupCepAddress(cep)
-
-    if (!cepAddress) {
-      return { payload: null, error: 'CEP não encontrado.' }
-    }
+    cepLookup = lookup.data
 
     if (!finalEndereco) {
-      finalEndereco = cepAddress
+      finalEndereco = cepLookup.endereco
     }
+  }
 
-    const coords = await geocodeAddress(
-      endereco ? `${nome}, ${endereco}, ${cepAddress}` : `${nome}, ${cepAddress}`,
-    )
+  const geocodeQueries = [
+    endereco && cepLookup
+      ? `${nome}, ${endereco}, ${cepLookup.cidade} - ${cepLookup.uf}, ${cep}, Brasil`
+      : null,
+    cepLookup
+      ? `${nome}, ${cepLookup.endereco}, ${cep}, Brasil`
+      : null,
+    finalEndereco ? `${nome}, ${finalEndereco}` : null,
+  ].filter((query): query is string => Boolean(query))
 
+  for (const query of geocodeQueries) {
+    const coords = await geocodeAddress(query)
     if (coords) {
       latitude = coords.lat
       longitude = coords.lng
+      break
     }
-  } else if (finalEndereco) {
-    const coords = await geocodeAddress(`${nome}, ${finalEndereco}`)
+  }
 
+  if (latitude === null && cep) {
+    const coords = await geocodeByCep(cep)
     if (coords) {
       latitude = coords.lat
       longitude = coords.lng
@@ -97,7 +141,7 @@ export async function resolveCondominioPayload(
     return {
       payload: null,
       error:
-        'Não foi possível localizar o endereço no mapa. Confira o endereço ou o CEP.',
+        'Não foi possível localizar o endereço no mapa. Confira o CEP e o endereço.',
     }
   }
 

@@ -40,6 +40,25 @@ export async function fetchEntregasByDate(
   return { data: (data ?? []) as EntregaComDetalhes[], error: null }
 }
 
+export async function fetchEntregasByRange(
+  startDate: string,
+  endDate: string,
+): Promise<{ data: EntregaComDetalhes[]; error: string | null }> {
+  const { data, error } = await supabase
+    .from('entregas')
+    .select(ENTREGA_SELECT)
+    .gte('data_prevista', startDate)
+    .lte('data_prevista', endDate)
+    .order('data_prevista', { ascending: true })
+
+  if (error) {
+    console.error('Erro ao buscar entregas do período')
+    return { data: [], error: 'Não foi possível carregar o calendário.' }
+  }
+
+  return { data: (data ?? []) as EntregaComDetalhes[], error: null }
+}
+
 export async function updateEntregaStatus(
   entregaId: string,
   status: EntregaComDetalhes['status'],

@@ -33,3 +33,4 @@ supabase/**/*.sql
 !supabase/migrations/
 !supabase/migrations/**
 !supabase/setup_completo.sql
+!supabase/seed_placeholder.sql

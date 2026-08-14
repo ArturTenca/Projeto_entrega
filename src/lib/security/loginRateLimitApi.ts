@@ -77,39 +77,47 @@ export async function checkIpBlockStatus(): Promise<IpBlockStatus> {
     return localBlock
   }
 
-  const { data, error } = await supabase.functions.invoke<RateLimitResponse>(
-    'login-rate-limit',
-    { body: { action: 'check' } },
-  )
+  try {
+    const { data, error } = await supabase.functions.invoke<RateLimitResponse>(
+      'login-rate-limit',
+      { body: { action: 'check' } },
+    )
 
-  if (error || !data) {
-    return { allowed: true, blockedUntil: null, remainingMs: 0 }
-  }
-
-  if (!data.allowed && data.blockedUntil) {
-    return {
-      allowed: false,
-      blockedUntil: data.blockedUntil,
-      remainingMs: getRemainingMs(data.blockedUntil),
+    if (error || !data) {
+      return { allowed: true, blockedUntil: null, remainingMs: 0 }
     }
+
+    if (!data.allowed && data.blockedUntil) {
+      return {
+        allowed: false,
+        blockedUntil: data.blockedUntil,
+        remainingMs: getRemainingMs(data.blockedUntil),
+      }
+    }
+  } catch {
+    return { allowed: true, blockedUntil: null, remainingMs: 0 }
   }
 
   return { allowed: true, blockedUntil: null, remainingMs: 0 }
 }
 
 export async function blockIpForOneDay(): Promise<IpBlockStatus> {
-  const { data, error } = await supabase.functions.invoke<RateLimitResponse>(
-    'login-rate-limit',
-    { body: { action: 'block' } },
-  )
+  try {
+    const { data, error } = await supabase.functions.invoke<RateLimitResponse>(
+      'login-rate-limit',
+      { body: { action: 'block' } },
+    )
 
-  if (error || !data?.blockedUntil) {
+    if (error || !data?.blockedUntil) {
+      return setLocalBlock()
+    }
+
+    return {
+      allowed: false,
+      blockedUntil: data.blockedUntil,
+      remainingMs: getRemainingMs(data.blockedUntil),
+    }
+  } catch {
     return setLocalBlock()
-  }
-
-  return {
-    allowed: false,
-    blockedUntil: data.blockedUntil,
-    remainingMs: getRemainingMs(data.blockedUntil),
   }
 }

@@ -14,6 +14,7 @@ import {
 } from '@/lib/security/sanitize'
 import { validateLoginCredentials } from '@/lib/security/validateLogin'
 import { clearLocalLoginBlock } from '@/lib/security/loginRateLimitApi'
+import { isSupabaseConfigured } from '@/lib/supabase'
 
 export function LoginPage() {
   const { signIn } = useAuth()
@@ -40,9 +41,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const isConfigured =
-    Boolean(import.meta.env.VITE_SUPABASE_URL) &&
-    Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY)
+  const isConfigured = isSupabaseConfigured
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

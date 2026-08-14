@@ -2,10 +2,12 @@ import { type FormEvent, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
+import { cepErrorMessage, formatCep, isCompleteCep } from '@/lib/format/cep'
 import { INPUT_LIMITS } from '@/lib/security/limits'
 import { sanitizeTextField } from '@/lib/security/sanitize'
 import type { Condominio } from '@/types/database'
 import {
+  lookupCepAddress,
   resolveCondominioPayload,
   type CondominioPayload,
 } from './geocodeLocation'
@@ -45,11 +47,54 @@ export function CondominioForm({
     toFormValues(initial),
   )
   const [error, setError] = useState<string | null>(null)
+  const [cepHint, setCepHint] = useState<string | null>(null)
+  const [cepHintError, setCepHintError] = useState<string | null>(null)
   const [geocoding, setGeocoding] = useState(false)
 
   useEffect(() => {
     setValues(toFormValues(initial))
+    setCepHint(null)
+    setCepHintError(null)
   }, [initial])
+
+  useEffect(() => {
+    if (!isCompleteCep(values.cep)) {
+      setCepHint(null)
+      setCepHintError(null)
+      return
+    }
+
+    let cancelled = false
+
+    async function validateCep() {
+      const result = await lookupCepAddress(values.cep)
+
+      if (cancelled) return
+
+      if (result.error || !result.data) {
+        setCepHint(null)
+        setCepHintError(result.error ?? 'CEP não encontrado.')
+        return
+      }
+
+      setCepHintError(null)
+      setCepHint(result.data.endereco)
+
+      setValues((current) => {
+        if (current.endereco.trim()) {
+          return current
+        }
+
+        return { ...current, endereco: result.data!.endereco }
+      })
+    }
+
+    void validateCep()
+
+    return () => {
+      cancelled = true
+    }
+  }, [values.cep])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -62,6 +107,17 @@ export function CondominioForm({
 
     if (!values.endereco.trim() && !values.cep.trim()) {
       setError('Informe o endereço ou o CEP para localizar no mapa.')
+      return
+    }
+
+    const incompleteCep = cepErrorMessage(values.cep)
+    if (incompleteCep) {
+      setError(incompleteCep)
+      return
+    }
+
+    if (cepHintError) {
+      setError(cepHintError)
       return
     }
 
@@ -95,6 +151,28 @@ export function CondominioForm({
       />
 
       <Input
+        label="CEP"
+        placeholder="00000-000"
+        inputMode="numeric"
+        autoComplete="postal-code"
+        value={values.cep}
+        maxLength={9}
+        error={cepHintError ?? undefined}
+        onChange={(event) => {
+          const formatted = formatCep(event.target.value)
+          setValues((current) => ({ ...current, cep: formatted }))
+        }}
+      />
+
+      {cepHint && !cepHintError ? (
+        <p className="-mt-2 text-xs text-success">CEP encontrado: {cepHint}</p>
+      ) : (
+        <p className="-mt-2 text-xs text-muted">
+          Digite o CEP no formato 00000-000 para localizar no mapa.
+        </p>
+      )}
+
+      <Input
         label="Endereço"
         placeholder="Rua, número, bairro, cidade"
         value={values.endereco}
@@ -109,28 +187,6 @@ export function CondominioForm({
           }))
         }
       />
-
-      <Input
-        label="CEP"
-        placeholder="00000-000"
-        inputMode="numeric"
-        value={values.cep}
-        maxLength={9}
-        onChange={(event) => {
-          const digits = event.target.value.replace(/\D/g, '').slice(0, 8)
-          const formatted =
-            digits.length > 5
-              ? `${digits.slice(0, 5)}-${digits.slice(5)}`
-              : digits
-
-          setValues((current) => ({ ...current, cep: formatted }))
-        }}
-      />
-
-      <p className="-mt-2 text-xs text-muted">
-        Use o endereço completo ou só o CEP. A localização no mapa é gerada
-        automaticamente.
-      </p>
 
       <Textarea
         label="Observações"

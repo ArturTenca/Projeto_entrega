@@ -82,6 +82,25 @@ export interface Profile {
   updated_at: string
 }
 
+export interface QuadroColuna {
+  id: string
+  nome: string
+  posicao: number
+  created_at: string
+  updated_at: string
+}
+
+export interface QuadroCard {
+  id: string
+  coluna_id: string
+  titulo: string
+  descricao: string | null
+  data_entrega: string | null
+  posicao: number
+  created_at: string
+  updated_at: string
+}
+
 export interface ClienteComCondominio extends Cliente {
   condominios: Pick<Condominio, 'id' | 'nome'> | null
   produto_favorito: Pick<Produto, 'id' | 'nome'> | null
@@ -190,6 +209,26 @@ export interface Database {
           updated_at?: string
         }
         Update: Partial<Produto>
+        Relationships: []
+      }
+      quadro_colunas: {
+        Row: QuadroColuna
+        Insert: Omit<QuadroColuna, 'id' | 'created_at' | 'updated_at'> & {
+          id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<QuadroColuna>
+        Relationships: []
+      }
+      quadro_cards: {
+        Row: QuadroCard
+        Insert: Omit<QuadroCard, 'id' | 'created_at' | 'updated_at'> & {
+          id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<QuadroCard>
         Relationships: []
       }
     }

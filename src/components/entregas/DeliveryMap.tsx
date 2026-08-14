@@ -1,37 +1,54 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import L from 'leaflet'
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  useMap,
+} from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useTheme } from '@/features/theme/ThemeProvider'
 import type { RouteResult } from '@/lib/routing/types'
-import { Card } from '@/components/ui/Card'
 
-const defaultIcon = L.icon({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-})
+function createStopIcon(ordem: number, dimmed: boolean) {
+  return L.divIcon({
+    className: 'delivery-map-marker',
+    html: `<span class="delivery-map-marker-dot${dimmed ? ' is-dimmed' : ''}">${ordem}</span>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16],
+  })
+}
 
-L.Marker.prototype.options.icon = defaultIcon
-
-function FitBounds({ route }: { route: RouteResult }) {
+function FitBounds({
+  route,
+  selectedStopId,
+}: {
+  route: RouteResult
+  selectedStopId?: string | null
+}) {
   const map = useMap()
 
   useEffect(() => {
     if (route.stops.length === 0) return
 
+    const selected = route.stops.find((stop) => stop.id === selectedStopId)
+
+    if (selected) {
+      map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 15), {
+        duration: 0.35,
+      })
+      return
+    }
+
     const bounds = L.latLngBounds(
       route.stops.map((stop) => [stop.lat, stop.lng] as [number, number]),
     )
 
-    map.fitBounds(bounds, { padding: [32, 32], maxZoom: 15 })
-  }, [map, route])
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 })
+  }, [map, route, selectedStopId])
 
   return null
 }
@@ -44,46 +61,68 @@ interface DeliveryMapProps {
 export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
   const { theme } = useTheme()
 
+  const tileUrl =
+    theme === 'dark'
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+
+  const lineColor = theme === 'dark' ? '#f54b2e' : '#f54b2e'
+
+  const icons = useMemo(() => {
+    const map = new Map<string, L.DivIcon>()
+
+    if (!route) return map
+
+    for (const stop of route.stops) {
+      const dimmed = Boolean(selectedStopId && selectedStopId !== stop.id)
+      map.set(stop.id, createStopIcon(stop.ordem, dimmed))
+    }
+
+    return map
+  }, [route, selectedStopId])
+
   if (!route || route.stops.length === 0) {
     return (
-      <Card className="flex h-64 items-center justify-center">
+      <div className="delivery-map relative z-0 flex h-72 items-center justify-center overflow-hidden border-y border-border bg-background">
         <p className="text-sm text-muted">Mapa indisponível sem coordenadas.</p>
-      </Card>
+      </div>
     )
   }
 
   const center = route.stops[0]!
 
   return (
-    <Card className="overflow-hidden p-0">
+    <div className="delivery-map relative z-0 h-80 w-full overflow-hidden border-y border-border bg-background">
       <MapContainer
+        key={theme}
         center={[center.lat, center.lng]}
         zoom={13}
-        className="h-72 w-full"
+        className="h-full w-full bg-background"
         scrollWheelZoom={false}
+        attributionControl={false}
+        zoomControl={false}
       >
         <TileLayer
-          attribution={
-            theme === 'dark'
-              ? '&copy; <a href="https://carto.com/">CARTO</a>'
-              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          }
-          url={
-            theme === 'dark'
-              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-              : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          }
+          attribution='&copy; OpenStreetMap &copy; CARTO'
+          url={tileUrl}
         />
-        <FitBounds route={route} />
+        <FitBounds route={route} selectedStopId={selectedStopId} />
         <Polyline
           positions={route.polyline.map((point) => [point.lat, point.lng])}
-          pathOptions={{ color: '#F54B2E', weight: 4, opacity: 0.85 }}
+          pathOptions={{
+            color: lineColor,
+            weight: 3,
+            opacity: 0.7,
+            lineCap: 'round',
+            lineJoin: 'round',
+          }}
         />
         {route.stops.map((stop) => (
           <Marker
             key={stop.id}
             position={[stop.lat, stop.lng]}
-            opacity={selectedStopId && selectedStopId !== stop.id ? 0.5 : 1}
+            icon={icons.get(stop.id)}
+            zIndexOffset={selectedStopId === stop.id ? 200 : 0}
           >
             <Popup>
               <strong>
@@ -94,6 +133,6 @@ export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
           </Marker>
         ))}
       </MapContainer>
-    </Card>
+    </div>
   )
 }

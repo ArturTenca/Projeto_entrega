@@ -17,5 +17,5 @@ export function sanitizeTextField(
   value: string,
   maxLength: number,
 ): string {
-  return stripControlCharacters(value).trim().slice(0, maxLength)
+  return stripControlCharacters(value).slice(0, maxLength)
 }

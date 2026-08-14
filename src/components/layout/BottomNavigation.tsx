@@ -7,6 +7,7 @@ import {
   NavIconEntregas,
   NavIconPedidos,
   NavIconProdutos,
+  NavIconQuadro,
 } from './NavIcons'
 
 interface NavItem {
@@ -21,16 +22,17 @@ const navItems: NavItem[] = [
   { to: '/produtos', label: 'Produtos', icon: <NavIconProdutos /> },
   { to: '/clientes', label: 'Clientes', icon: <NavIconClientes /> },
   { to: '/agenda', label: 'Agenda', icon: <NavIconAgenda /> },
+  { to: '/quadro', label: 'Quadro', icon: <NavIconQuadro /> },
   { to: '/configuracoes', label: 'Config', icon: <NavIconConfig /> },
 ]
 
 export function BottomNavigation() {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm"
       aria-label="Navegação principal"
     >
-      <div className="mx-auto flex max-w-[500px] items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-2">
+      <div className="mx-auto flex max-w-[900px] items-stretch justify-around overflow-x-auto px-1 pb-[env(safe-area-inset-bottom)] pt-2 sm:px-2">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -38,7 +40,7 @@ export function BottomNavigation() {
             end={item.to === '/'}
             className={({ isActive }) =>
               [
-                'flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-[var(--radius-button)] px-1 py-1 text-[10px] font-medium transition-colors duration-150 sm:text-xs',
+                'flex min-h-12 min-w-[3.25rem] flex-1 flex-col items-center justify-center gap-0.5 rounded-[var(--radius-button)] px-0.5 py-1 text-[10px] font-medium transition-colors duration-150 sm:min-w-0 sm:px-1 sm:text-xs',
                 isActive
                   ? 'text-primary'
                   : 'text-muted hover:text-secondary',
