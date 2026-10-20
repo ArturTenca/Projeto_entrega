@@ -15,6 +15,7 @@ import {
   type MesResumo,
   type RankingItem,
 } from '@/features/financeiro/computeFinanceiro'
+import { ProdutosDonut } from '@/features/financeiro/ProdutosDonut'
 import { fetchProdutos } from '@/features/produtos/api'
 import { addMonths, formatMonthYear, startOfMonth, toDateISO } from '@/lib/dates'
 import { formatBRL } from '@/lib/format/currency'
@@ -109,6 +110,11 @@ export function FinanceiroPage() {
         produtoId,
       }),
     [entregas, month, meses, clienteId, produtoId],
+  )
+
+  const produtoColorIndex = useMemo(
+    () => new Map(produtoOptions.map((option, index) => [option.value, index])),
+    [produtoOptions],
   )
 
   const { totais } = resumo
@@ -252,13 +258,13 @@ export function FinanceiroPage() {
             </Card>
           ) : (
             <>
-              <RankingCard
-                title="Itens mais vendidos"
-                items={resumo.produtos}
-                value={(item) => item.quantidade}
-                primary={(item) => `${item.quantidade} un.`}
-                secondary={(item) => formatBRL(item.faturado)}
-              />
+              <Card variant="important">
+                <h2 className="section-title mb-4">Itens mais vendidos</h2>
+                <ProdutosDonut
+                  items={resumo.produtos}
+                  colorIndexById={produtoColorIndex}
+                />
+              </Card>
               <RankingCard
                 title="Clientes que mais compram"
                 items={resumo.clientes}

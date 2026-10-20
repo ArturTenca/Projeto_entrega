@@ -17,6 +17,17 @@
   --font-sans: 'Inter', sans-serif;
   --font-gemma: 'Gloria Hallelujah', cursive;
 
+  /* Paleta categórica dos gráficos (ordem fixa, validada para daltonismo) */
+  --color-series-1: #2a78d6;
+  --color-series-2: #eb6834;
+  --color-series-3: #1baf7a;
+  --color-series-4: #eda100;
+  --color-series-5: #e87ba4;
+  --color-series-6: #008300;
+  --color-series-7: #6250d6;
+  --color-series-8: #e34948;
+  --color-series-other: #9ca3af;
+
   --radius-button: 12px;
   --radius-card: 12px;
   --radius-card-lg: 16px;
@@ -30,6 +41,15 @@
     --color-card: #181b22;
     --color-muted: #9ca3af;
     --color-border: #2d3340;
+    --color-series-1: #3987e5;
+    --color-series-2: #d95926;
+    --color-series-3: #199e70;
+    --color-series-4: #c98500;
+    --color-series-5: #d55181;
+    --color-series-6: #008300;
+    --color-series-7: #9085e9;
+    --color-series-8: #e66767;
+    --color-series-other: #6b7280;
   }
 
   * {
@@ -71,7 +91,18 @@
   }
 
   html.dark .delivery-map .leaflet-tile-pane {
-    filter: grayscale(0.45) contrast(0.95) brightness(0.78);
+    filter: invert(1) hue-rotate(180deg) grayscale(0.5) brightness(0.85)
+      contrast(0.9);
+  }
+
+  .delivery-map .leaflet-control-attribution {
+    background: color-mix(in srgb, var(--color-card) 80%, transparent);
+    color: var(--color-muted);
+    font-size: 10px;
+  }
+
+  .delivery-map .leaflet-control-attribution a {
+    color: var(--color-muted);
   }
 
   .delivery-map .leaflet-control-container,

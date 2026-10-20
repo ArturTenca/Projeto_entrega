@@ -61,10 +61,8 @@ interface DeliveryMapProps {
 export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
   const { theme } = useTheme()
 
-  const tileUrl =
-    theme === 'dark'
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+  // Tiles do OpenStreetMap: grátis e sem chave. O modo escuro é feito por filtro CSS (index.css).
+  const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 
   const lineColor = theme === 'dark' ? '#f54b2e' : '#f54b2e'
 
@@ -99,11 +97,12 @@ export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
         zoom={13}
         className="h-full w-full bg-background"
         scrollWheelZoom={false}
-        attributionControl={false}
+        attributionControl
         zoomControl={false}
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap &copy; CARTO'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          maxZoom={19}
           url={tileUrl}
         />
         <FitBounds route={route} selectedStopId={selectedStopId} />
