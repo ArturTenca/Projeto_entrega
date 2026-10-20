@@ -20,6 +20,8 @@ export async function fetchProdutos(): Promise<{
 
 export async function createProduto(payload: {
   nome: string
+  preco_custo: number
+  preco_venda: number
   ativo: boolean
 }): Promise<{ error: string | null }> {
   const { error } = await supabase.from('produtos').insert(payload)
@@ -34,7 +36,12 @@ export async function createProduto(payload: {
 
 export async function updateProduto(
   id: string,
-  payload: { nome?: string; ativo?: boolean },
+  payload: {
+    nome?: string
+    preco_custo?: number
+    preco_venda?: number
+    ativo?: boolean
+  },
 ): Promise<{ error: string | null }> {
   const { error } = await supabase.from('produtos').update(payload).eq('id', id)
 

@@ -16,6 +16,7 @@ import {
   ProdutoForm,
   type ProdutoFormValues,
 } from '@/features/produtos/ProdutoForm'
+import { formatBRL } from '@/lib/format/currency'
 import type { Produto } from '@/types/database'
 
 type ProdutoModal = { mode: 'create' } | { mode: 'edit'; item: Produto }
@@ -115,6 +116,40 @@ export function ProdutosPage() {
                   {produto.ativo ? 'Ativo' : 'Inativo'}
                 </Badge>
               </div>
+
+              {produto.preco_venda > 0 ? (
+                <dl className="mt-3 grid grid-cols-3 gap-2 text-sm">
+                  <div>
+                    <dt className="text-xs text-muted">Custo</dt>
+                    <dd className="font-semibold text-secondary">
+                      {formatBRL(produto.preco_custo)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted">Venda</dt>
+                    <dd className="font-semibold text-secondary">
+                      {formatBRL(produto.preco_venda)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted">Lucro</dt>
+                    <dd
+                      className={[
+                        'font-semibold',
+                        produto.preco_venda - produto.preco_custo >= 0
+                          ? 'text-success'
+                          : 'text-error',
+                      ].join(' ')}
+                    >
+                      {formatBRL(produto.preco_venda - produto.preco_custo)}
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="mt-3 text-sm text-warning">
+                  Sem valores cadastrados. Edite para informar custo e venda.
+                </p>
+              )}
 
               <div className="mt-4 flex gap-2">
                 <Button

@@ -17,6 +17,8 @@ export type ThemeMode = 'light' | 'dark'
 export interface Produto {
   id: string
   nome: string
+  preco_custo: number
+  preco_venda: number
   ativo: boolean
   created_at: string
   updated_at: string
@@ -69,6 +71,8 @@ export interface Entrega {
   observacoes: string | null
   entregue_em: string | null
   entregue_por: string | null
+  valor_unitario_custo: number | null
+  valor_unitario_venda: number | null
   created_at: string
   updated_at: string
 }
@@ -184,7 +188,14 @@ export interface Database {
       }
       entregas: {
         Row: Entrega
-        Insert: Omit<Entrega, 'id' | 'created_at' | 'updated_at'> & {
+        Insert: Omit<
+          Entrega,
+          | 'id'
+          | 'created_at'
+          | 'updated_at'
+          | 'valor_unitario_custo'
+          | 'valor_unitario_venda'
+        > & {
           id?: string
           created_at?: string
           updated_at?: string

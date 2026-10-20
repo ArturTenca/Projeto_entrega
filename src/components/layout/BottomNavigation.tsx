@@ -5,6 +5,7 @@ import {
   NavIconClientes,
   NavIconConfig,
   NavIconEntregas,
+  NavIconFinanceiro,
   NavIconMenu,
   NavIconPedidos,
   NavIconProdutos,
@@ -24,6 +25,7 @@ const navItems: NavItem[] = [
   { to: '/clientes', label: 'Clientes', icon: <NavIconClientes /> },
   { to: '/agenda', label: 'Agenda', icon: <NavIconAgenda /> },
   { to: '/quadro', label: 'Quadro', icon: <NavIconQuadro /> },
+  { to: '/financeiro', label: 'Financeiro', icon: <NavIconFinanceiro /> },
   { to: '/configuracoes', label: 'Config', icon: <NavIconConfig /> },
 ]
 
@@ -105,7 +107,7 @@ export function BottomNavigation() {
               aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav-sheet"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white transition-colors duration-150 hover:bg-primary-hover"
+              className="-mt-7 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg ring-4 ring-card transition-colors duration-150 hover:bg-primary-hover"
             >
               <NavIconMenu
                 className={[

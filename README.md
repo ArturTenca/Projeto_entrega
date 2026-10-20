@@ -32,7 +32,7 @@ cp .env.example .env
 
 - Crie os usuários em **Authentication → Users** (sem tela de cadastro no app)
 - Desabilite sign-up público em **Authentication → Providers → Email**
-- Execute o SQL em `supabase/setup_completo.sql` (ou os arquivos em `supabase/migrations/` **na ordem** 001 → 004) no SQL Editor
+- Execute o SQL em `supabase/setup_completo.sql` (ou os arquivos em `supabase/migrations/` **na ordem** 001 → 006) no SQL Editor
 
 5. Deploy da Edge Function de bloqueio por IP:
 
