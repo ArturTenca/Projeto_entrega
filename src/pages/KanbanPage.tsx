@@ -225,7 +225,7 @@ export function KanbanPage() {
         }}
         onDragCancel={() => setActiveCard(null)}
       >
-        <div className="-mx-3 flex min-h-0 flex-1 snap-x snap-mandatory items-stretch gap-3 overflow-x-auto overscroll-x-contain px-3 pb-1 md:mx-0 md:px-0">
+        <div className="flex min-h-0 flex-1 snap-x snap-mandatory items-stretch gap-3 overflow-x-auto overscroll-x-contain pb-1">
           {colunas.map((coluna) => (
             <QuadroColumn
               key={coluna.id}
@@ -239,7 +239,7 @@ export function KanbanPage() {
             />
           ))}
 
-          <section className="flex h-fit w-[min(85vw,20rem)] shrink-0 snap-center flex-col gap-3 rounded-[var(--radius-card-lg)] border border-dashed border-border p-3 md:w-64">
+          <section className="flex h-fit w-64 shrink-0 snap-center flex-col gap-3 rounded-[var(--radius-card-lg)] border border-dashed border-border p-3">
             <p className="text-sm font-medium text-secondary">Nova lista</p>
             <Input
               label="Nome"

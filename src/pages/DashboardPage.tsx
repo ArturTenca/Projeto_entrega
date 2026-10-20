@@ -55,7 +55,7 @@ export function DashboardPage() {
         </p>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card>
           <p className="text-sm text-muted">Entregas</p>
           <p className="mt-1 text-2xl font-bold text-secondary">{stats.total}</p>
@@ -96,7 +96,7 @@ export function DashboardPage() {
             missingCoordinates={missingCoordinates}
           />
 
-          <div className="relative z-0 -mx-4 sm:-mx-6">
+          <div className="relative z-0 -mx-6">
             <DeliveryMap
               route={route}
               selectedStopId={selectedCondominioId}

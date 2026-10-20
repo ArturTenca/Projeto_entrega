@@ -45,7 +45,7 @@ export function QuadroColumn({
   return (
     <section
       className={[
-        'flex h-full min-h-0 w-[min(85vw,20rem)] shrink-0 snap-center flex-col rounded-[var(--radius-card-lg)] border border-border bg-background md:w-auto md:min-w-[16rem] md:flex-1',
+        'flex h-full min-h-0 min-w-[16rem] flex-1 shrink-0 snap-center flex-col rounded-[var(--radius-card-lg)] border border-border bg-background',
         isOver ? 'border-primary' : '',
       ]
         .filter(Boolean)

@@ -16,8 +16,8 @@ export function AppShell() {
         <main
           className={
             isQuadro
-              ? 'flex h-dvh flex-col overflow-hidden px-3 pb-24 pt-4 sm:px-6 md:px-8'
-              : 'px-4 pb-28 pt-6 sm:px-6'
+              ? 'flex h-dvh flex-col overflow-hidden px-8 pb-24 pt-4'
+              : 'px-6 pb-28 pt-6'
           }
         >
           <Outlet />
