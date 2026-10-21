@@ -5,12 +5,36 @@ import {
   Marker,
   Polyline,
   Popup,
-  TileLayer,
   useMap,
 } from 'react-leaflet'
+import { maplibreGL } from '@maplibre/maplibre-gl-leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import { useTheme } from '@/features/theme/ThemeProvider'
 import type { RouteResult } from '@/lib/routing/types'
+
+// OpenFreeMap (dados do OpenStreetMap): open source, grátis e sem chave.
+// Estilo Positron, minimalista. Os créditos ficam na tela de Configurações.
+// O modo escuro (cinza escuro) é feito por filtro CSS (index.css).
+const BASEMAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/positron'
+
+function BaseMapLayer() {
+  const map = useMap()
+
+  useEffect(() => {
+    const layer = maplibreGL({
+      style: BASEMAP_STYLE_URL,
+      attributionControl: false,
+    })
+    layer.addTo(map)
+
+    return () => {
+      layer.remove()
+    }
+  }, [map])
+
+  return null
+}
 
 function createStopIcon(ordem: number, dimmed: boolean) {
   return L.divIcon({
@@ -61,9 +85,6 @@ interface DeliveryMapProps {
 export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
   const { theme } = useTheme()
 
-  // Tiles do OpenStreetMap: grátis e sem chave. O modo escuro é feito por filtro CSS (index.css).
-  const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-
   const lineColor = theme === 'dark' ? '#f54b2e' : '#f54b2e'
 
   const icons = useMemo(() => {
@@ -97,14 +118,10 @@ export function DeliveryMap({ route, selectedStopId }: DeliveryMapProps) {
         zoom={13}
         className="h-full w-full bg-background"
         scrollWheelZoom={false}
-        attributionControl
+        attributionControl={false}
         zoomControl={false}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          maxZoom={19}
-          url={tileUrl}
-        />
+        <BaseMapLayer />
         <FitBounds route={route} selectedStopId={selectedStopId} />
         <Polyline
           positions={route.polyline.map((point) => [point.lat, point.lng])}

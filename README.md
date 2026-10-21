@@ -77,11 +77,14 @@ Não há hierarquia entre usuários. Tudo que André ou Ana criar (clientes, ped
 
 A tela **Entregas** agrupa o dia por condomínio (cápsulas) e calcula a rota no mapa.
 
-| Prioridade | API | O que faz |
-|------------|-----|-----------|
-| 1ª | `VITE_GOOGLE_MAPS_API_KEY` | Rota com **trânsito em tempo real** (Routes API) |
-| 2ª | `VITE_ORS_API_KEY` | Rota mais curta **sem trânsito** (OpenRouteService) |
-| 3ª | — | Estimativa por distância em linha reta |
+Tudo é open source e grátis, **sem chave de API**:
+
+| Parte | Serviço | O que faz |
+|-------|---------|-----------|
+| Mapa | OpenStreetMap (tiles) | Desenho do mapa |
+| Endereço → coordenada | Nominatim (OpenStreetMap) | Geocodificação dos condomínios |
+| Rota | OSRM (`router.project-osrm.org`) | Ordem otimizada das paradas + rota pelas ruas, **sem trânsito** |
+| Fallback | — | Estimativa por distância em linha reta, se o OSRM falhar |
 
 **Waze** não possui API pública para embedar rotas no app. Cada condomínio tem botão **Waze** que abre o app com navegação e trânsito ao vivo.
 

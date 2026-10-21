@@ -15,8 +15,7 @@ export type RouteResult = {
   polyline: LatLng[]
   distanceMeters: number
   durationSeconds: number
-  provider: 'google' | 'openrouteservice' | 'estimativa'
-  trafficAware: boolean
+  provider: 'osrm' | 'estimativa'
 }
 
 export type CondominioRouteInput = {

@@ -11,12 +11,8 @@ interface RouteSummaryProps {
 }
 
 function providerLabel(route: RouteResult): string {
-  if (route.provider === 'google' && route.trafficAware) {
-    return 'Google Maps · com trânsito'
-  }
-
-  if (route.provider === 'openrouteservice') {
-    return 'OpenRouteService · rota mais curta'
+  if (route.provider === 'osrm') {
+    return 'OpenStreetMap (OSRM) · rota mais curta, sem trânsito'
   }
 
   return 'Estimativa · linha reta'

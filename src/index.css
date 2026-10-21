@@ -86,13 +86,9 @@
     font-family: var(--font-sans);
   }
 
-  .delivery-map .leaflet-tile-pane {
-    filter: grayscale(0.35) contrast(0.92) brightness(1.06);
-  }
-
+  /* Positron invertido parcialmente: fundo cinza escuro (~#2a2a2a) em vez de preto. */
   html.dark .delivery-map .leaflet-tile-pane {
-    filter: invert(1) hue-rotate(180deg) grayscale(0.5) brightness(0.85)
-      contrast(0.9);
+    filter: grayscale(1) invert(0.85);
   }
 
   .delivery-map .leaflet-control-attribution {

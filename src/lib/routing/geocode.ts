@@ -89,28 +89,3 @@ export async function geocodeByCep(cep: string): Promise<LatLng | null> {
     lng: Number.parseFloat(first.lon),
   }
 }
-
-export async function geocodeWithOpenRouteService(
-  address: string,
-  apiKey: string,
-): Promise<LatLng | null> {
-  const response = await fetch(
-    `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(address)}&boundary.country=BRA&size=1`,
-  )
-
-  if (!response.ok) {
-    return null
-  }
-
-  const data = (await response.json()) as {
-    features?: Array<{ geometry: { coordinates: [number, number] } }>
-  }
-
-  const coordinates = data.features?.[0]?.geometry.coordinates
-
-  if (!coordinates) {
-    return null
-  }
-
-  return { lat: coordinates[1], lng: coordinates[0] }
-}

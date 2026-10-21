@@ -1,14 +1,13 @@
 import { supabase } from '@/lib/supabase'
-import { geocodeAddress, geocodeWithOpenRouteService } from './geocode'
-import { routeWithEstimativa, routeWithGoogleMaps } from './googleRoutes'
-import { routeWithOpenRouteService } from './openRouteService'
+import { routeWithEstimativa } from './estimativa'
+import { geocodeAddress } from './geocode'
+import { routeWithOsrm } from './osrm'
 import type { CondominioRouteInput, LatLng, RouteResult } from './types'
 
 async function resolveCoordinates(
   condominios: CondominioRouteInput[],
 ): Promise<Map<string, LatLng>> {
   const coordinates = new Map<string, LatLng>()
-  const orsKey = import.meta.env.VITE_ORS_API_KEY
 
   for (const condominio of condominios) {
     if (condominio.latitude !== null && condominio.longitude !== null) {
@@ -25,9 +24,7 @@ async function resolveCoordinates(
 
     const searchText = `${condominio.nome}, ${condominio.endereco}`
 
-    const geocoded = orsKey
-      ? await geocodeWithOpenRouteService(searchText, orsKey)
-      : await geocodeAddress(searchText)
+    const geocoded = await geocodeAddress(searchText)
 
     if (!geocoded) {
       continue
@@ -67,26 +64,9 @@ export async function computeDeliveryRoute(
     return { route: null, missingCoordinates }
   }
 
-  const googleKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-  const orsKey = import.meta.env.VITE_ORS_API_KEY
-
-  let route: RouteResult | null = null
-
-  if (googleKey) {
-    route = await routeWithGoogleMaps(googleKey, uniqueCondominios, coordinates)
-  }
-
-  if (!route && orsKey) {
-    route = await routeWithOpenRouteService(
-      orsKey,
-      uniqueCondominios,
-      coordinates,
-    )
-  }
-
-  if (!route) {
-    route = routeWithEstimativa(uniqueCondominios, coordinates)
-  }
+  const route: RouteResult | null =
+    (await routeWithOsrm(uniqueCondominios, coordinates)) ??
+    routeWithEstimativa(uniqueCondominios, coordinates)
 
   return { route, missingCoordinates }
 }

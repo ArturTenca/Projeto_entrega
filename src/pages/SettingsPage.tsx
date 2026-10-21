@@ -64,6 +64,19 @@ export function SettingsPage() {
       >
         Sair
       </Button>
+
+      <p className="text-center text-xs text-muted">
+        Mapa: OpenFreeMap · Dados ©{' '}
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          colaboradores do OpenStreetMap
+        </a>
+        {' '}· Rotas: OSRM
+      </p>
     </div>
   )
 }
