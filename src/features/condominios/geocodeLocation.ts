@@ -150,13 +150,13 @@ export async function resolveCondominioPayload(
     }
   }
 
+  // O Nominatim (OpenStreetMap) raramente conhece o nome do condomínio ou o bairro,
+  // então tenta primeiro só rua + cidade e deixa o nome por último.
+  const cidadeUf = cepLookup ? `${cepLookup.cidade} - ${cepLookup.uf}` : null
   const geocodeQueries = [
-    endereco && cepLookup
-      ? `${nome}, ${endereco}, ${cepLookup.cidade} - ${cepLookup.uf}, ${cep}, Brasil`
-      : null,
-    cepLookup
-      ? `${nome}, ${cepLookup.endereco}, ${cep}, Brasil`
-      : null,
+    endereco && cidadeUf ? `${endereco}, ${cidadeUf}` : null,
+    cepLookup?.logradouro ? `${cepLookup.logradouro}, ${cidadeUf}` : null,
+    finalEndereco || null,
     finalEndereco ? `${nome}, ${finalEndereco}` : null,
   ].filter((query): query is string => Boolean(query))
 

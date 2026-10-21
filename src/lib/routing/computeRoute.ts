@@ -22,9 +22,9 @@ async function resolveCoordinates(
       continue
     }
 
-    const searchText = `${condominio.nome}, ${condominio.endereco}`
-
-    const geocoded = await geocodeAddress(searchText)
+    const geocoded =
+      (await geocodeAddress(condominio.endereco)) ??
+      (await geocodeAddress(`${condominio.nome}, ${condominio.endereco}`))
 
     if (!geocoded) {
       continue
