@@ -29,15 +29,43 @@ export async function lookupCepAddress(
     return { data: null, error: 'CEP incompleto. Use o formato 00000-000.' }
   }
 
+  // ViaCEP primeiro; se falhar ou não conhecer o CEP, tenta a BrasilAPI (outras bases).
+  const result = (await fetchViaCep(digits)) ?? (await fetchBrasilApiCep(digits))
+
+  if (!result) {
+    return { data: null, error: 'CEP não encontrado.' }
+  }
+
+  return { data: result, error: null }
+}
+
+function buildCepResult(
+  logradouro: string | undefined,
+  bairro: string | undefined,
+  cidade: string,
+  uf: string,
+): CepLookupResult {
+  const parts = [logradouro, bairro, `${cidade} - ${uf}`].filter(Boolean)
+
+  return {
+    endereco: parts.join(', '),
+    logradouro: logradouro ?? '',
+    bairro: bairro ?? '',
+    cidade,
+    uf,
+  }
+}
+
+async function fetchViaCep(digits: string): Promise<CepLookupResult | null> {
   try {
     const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
 
     if (!response.ok) {
-      return { data: null, error: 'Não foi possível consultar o CEP.' }
+      return null
     }
 
     const data = (await response.json()) as {
-      erro?: boolean
+      erro?: boolean | string
       logradouro?: string
       bairro?: string
       localidade?: string
@@ -45,27 +73,39 @@ export async function lookupCepAddress(
     }
 
     if (data.erro || !data.localidade || !data.uf) {
-      return { data: null, error: 'CEP não encontrado.' }
+      return null
     }
 
-    const parts = [
-      data.logradouro,
-      data.bairro,
-      `${data.localidade} - ${data.uf}`,
-    ].filter(Boolean)
-
-    return {
-      data: {
-        endereco: parts.join(', '),
-        logradouro: data.logradouro ?? '',
-        bairro: data.bairro ?? '',
-        cidade: data.localidade,
-        uf: data.uf,
-      },
-      error: null,
-    }
+    return buildCepResult(data.logradouro, data.bairro, data.localidade, data.uf)
   } catch {
-    return { data: null, error: 'Não foi possível consultar o CEP.' }
+    return null
+  }
+}
+
+async function fetchBrasilApiCep(
+  digits: string,
+): Promise<CepLookupResult | null> {
+  try {
+    const response = await fetch(`https://brasilapi.com.br/api/cep/v1/${digits}`)
+
+    if (!response.ok) {
+      return null
+    }
+
+    const data = (await response.json()) as {
+      street?: string
+      neighborhood?: string
+      city?: string
+      state?: string
+    }
+
+    if (!data.city || !data.state) {
+      return null
+    }
+
+    return buildCepResult(data.street, data.neighborhood, data.city, data.state)
+  } catch {
+    return null
   }
 }
 

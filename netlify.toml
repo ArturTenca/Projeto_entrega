@@ -10,5 +10,5 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://tiles.openfreemap.org; worker-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://tiles.openfreemap.org https://router.project-osrm.org https://nominatim.openstreetmap.org"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://tiles.openfreemap.org; worker-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://tiles.openfreemap.org https://router.project-osrm.org https://nominatim.openstreetmap.org https://viacep.com.br https://brasilapi.com.br"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"

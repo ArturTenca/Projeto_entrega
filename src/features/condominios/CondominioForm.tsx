@@ -156,7 +156,6 @@ export function CondominioForm({
         inputMode="numeric"
         autoComplete="postal-code"
         value={values.cep}
-        maxLength={9}
         error={cepHintError ?? undefined}
         onChange={(event) => {
           const formatted = formatCep(event.target.value)
